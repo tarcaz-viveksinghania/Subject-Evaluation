@@ -13,10 +13,10 @@ def display_page3():
     st.write("This is the third page of the Streamlit app.")
 
     # Check if the PDF and DataFrame are stored in session state
-    if "uploaded_files" in st.session_state and "df" in st.session_state:
-        pdf_document = st.session_state.uploaded_files
-        print("YESSSS")
+    if "pdf_document" in st.session_state and "df" in st.session_state:
+        pdf_document = st.session_state.pdf_document        
         df = st.session_state.df
+        df.columns = df.columns.str.strip()
 
         # Use the main function to process the DataFrame and PDF
         result_df = main(df, pdf_document)

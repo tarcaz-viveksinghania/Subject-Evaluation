@@ -13,59 +13,43 @@ def render_pdf_page(pdf_document, page_number):
     return img
 
 def pdf_viewer():
-    st.title("Multiple PDF Viewer")
+    st.title("PDF Viewer")
 
-    # File uploader for multiple PDFs
-    uploaded_files = st.file_uploader("Choose PDF files", type="pdf", accept_multiple_files=True)
+    # File uploader for a single PDF
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
-    if uploaded_files:
-        # Store the uploaded files in session state
-        if "uploaded_files" not in st.session_state:
-            st.session_state.uploaded_files = []
-        
-        for uploaded_file in uploaded_files:
-            if not any(file["name"] == uploaded_file.name for file in st.session_state.uploaded_files):
-                st.session_state.uploaded_files.append({
-                    "name": uploaded_file.name,
-                    "content": uploaded_file.getvalue()
-                })
+    if uploaded_file:
+        # Store only the PDF content in session state
+        st.session_state.uploaded_pdf_content = uploaded_file.getvalue()
 
-        # Create a dictionary to store the PDF documents and their page counts
-        pdf_documents = {}
-        for file in st.session_state.uploaded_files:
-            pdf_documents[file["name"]] = fitz.open(stream=file["content"], filetype="pdf")
-
-        # Ensure the session state includes all uploaded PDFs
-        if "page_numbers" not in st.session_state:
-            st.session_state.page_numbers = {}
-        for pdf_name in pdf_documents.keys():
-            if pdf_name not in st.session_state.page_numbers:
-                st.session_state.page_numbers[pdf_name] = 0
-
-        # Selectbox to choose which PDF to view
-        selected_pdf_name = st.selectbox("Select a PDF", list(pdf_documents.keys()))
-        pdf_document = pdf_documents[selected_pdf_name]
+        # Open the PDF document and store it in session state
+        pdf_document = fitz.open(stream=st.session_state.uploaded_pdf_content, filetype="pdf")
+        st.session_state.pdf_document = pdf_document  # Store the PDF document object
         total_pages = pdf_document.page_count
 
+        # Initialize page number in session state if not already
+        if "page_number" not in st.session_state:
+            st.session_state.page_number = 0
+
         # Display the current page of the selected PDF
-        img = render_pdf_page(pdf_document, st.session_state.page_numbers[selected_pdf_name])
+        img = render_pdf_page(pdf_document, st.session_state.page_number)
         st.image(img)
 
         # Navigation buttons
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button("Previous Page") and st.session_state.page_numbers[selected_pdf_name] > 0:
-                st.session_state.page_numbers[selected_pdf_name] -= 1
+            if st.button("Previous Page") and st.session_state.page_number > 0:
+                st.session_state.page_number -= 1
                 st.rerun()
         with col2:
-            st.write(f"Page {st.session_state.page_numbers[selected_pdf_name] + 1} of {total_pages}")
+            st.write(f"Page {st.session_state.page_number + 1} of {total_pages}")
         with col3:
-            if st.button("Next Page") and st.session_state.page_numbers[selected_pdf_name] < total_pages - 1:
-                st.session_state.page_numbers[selected_pdf_name] += 1
+            if st.button("Next Page") and st.session_state.page_number < total_pages - 1:
+                st.session_state.page_number += 1
                 st.rerun()
 
-        
     st.divider()
+
     # Button to navigate to the next Streamlit page
     if st.button("Go to Next Page"):
         st.session_state.current_page = "next_page"
