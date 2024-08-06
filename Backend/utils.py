@@ -5,7 +5,7 @@ from typing import List
 from PIL import Image
 import pandas as pd
 import google.generativeai as genai
-genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+genai.configure(api_key=os.environ["API_KEY"])
 
 
 VISION_PROMPT = 'Extract question-answers from the given images in this JSON schema : {"Q1": "A1", "Q2": "A2", "Q3": "A3", "Q4(i)": "A4(i)", ...}.'

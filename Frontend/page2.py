@@ -45,6 +45,9 @@ def display_next_page():
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
 
+        # Store the uploaded DataFrame in session state
+        st.session_state.df = df
+
         # Display the uploaded CSV data in grid format
         gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_default_column(
