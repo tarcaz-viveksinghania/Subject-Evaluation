@@ -1,9 +1,5 @@
 import streamlit as st
-import fitz  # PyMuPDF
-import page2  # Import the next_page module
-import page3
-
-st.set_page_config(page_title="Answer Sheet Evaluation", layout="wide")
+import fitz
 
 # Function to render a specific page of the PDF
 def render_pdf_page(pdf_document, page_number):
@@ -12,8 +8,38 @@ def render_pdf_page(pdf_document, page_number):
     img = pix.tobytes()
     return img
 
-def pdf_viewer():
-    st.title("PDF Viewer")
+
+
+def student_pdf():
+    st.subheader("Upload Student's Answers")
+
+    # Load CSS from file
+    def load_css(file_name):
+        with open(file_name) as f:
+            return f.read()
+    
+    # Inject sidebar CSS into the Streamlit app
+    st.markdown(f'<style>{load_css("Frontend/CSS/sidebar_styles.css")}</style>', unsafe_allow_html=True)
+    st.markdown(f'<style>{load_css("Frontend/CSS/button.css")}</style>', unsafe_allow_html=True)
+
+    # Add Sidebar into the Streamlit app
+    st.sidebar.title("GradeSmart.AI")
+    st.sidebar.divider()
+    
+    if st.sidebar.button("Home", type="primary"):
+        st.session_state.current_page = "home_page"
+        st.rerun()
+    
+    st.sidebar.button("Student", type="primary", use_container_width=True)
+    
+    if st.sidebar.button("Examiner", type="primary"):
+        st.session_state.current_page = "upload_teacher_answer"
+        st.rerun()
+    
+    if st.sidebar.button("Evaluate", type="primary"):
+        st.session_state.current_page = "evaluate_page"
+        st.rerun()
+
 
     # File uploader for a single PDF
     uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
@@ -51,21 +77,17 @@ def pdf_viewer():
     st.divider()
 
     # Button to navigate to the next Streamlit page
-    if st.button("Go to Next Page"):
-        st.session_state.current_page = "next_page"
-        st.rerun()
+    col4, col5, col6, col7, col8 = st.columns(5)
+    with col4:
+        if st.button("Go Home"):
+            st.session_state.current_page = "home_page"
+            st.rerun()
+    with col8:
+        if st.button("Go to Next Page"):
+            st.session_state.current_page = "upload_teacher_answer"
+            st.rerun()
 
-# Main function to manage page navigation
-def main():
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "pdf_viewer"
-
-    if st.session_state.current_page == "pdf_viewer":
-        pdf_viewer()
-    elif st.session_state.current_page == "next_page":
-        page2.display_next_page()
-    elif st.session_state.current_page == "page3":
-        page3.display_page3()
 
 if __name__ == "__main__":
-    main()
+    student_pdf()
+

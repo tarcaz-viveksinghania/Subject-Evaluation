@@ -3,21 +3,47 @@ import pandas as pd
 import os
 from st_aggrid import AgGrid, GridOptionsBuilder
 
-def display_next_page():
-    st.title("Next Page")
-    st.write("This is the next page of the Streamlit app.")
+def examiner_pdf():
+    st.subheader("Choose or Upload Examiner's Answer Sheet")
 
+    # Load CSS from file
+    def load_css(file_name):
+        with open(file_name) as f:
+            return f.read()
+
+    # Inject sidebar CSS into the Streamlit app
+    st.markdown(f'<style>{load_css("Frontend/CSS/sidebar_styles.css")}</style>', unsafe_allow_html=True)
+    st.markdown(f'<style>{load_css("Frontend/CSS/button.css")}</style>', unsafe_allow_html=True)
+
+    # Add Sidebar into the Streamlit app
+    st.sidebar.title("GradeSmart.AI")
+    st.sidebar.divider()
+    if st.sidebar.button("Home", type="primary"):
+        st.session_state.current_page = "home_page"
+        st.rerun()
+
+    if st.sidebar.button("Student", type="primary"):
+        st.session_state.current_page = "upload_student_answer"
+        st.rerun()
+
+    st.sidebar.button("Examiner", type="primary", use_container_width=True)
+    
+    if st.sidebar.button("Evaluate", type="primary"):
+        st.session_state.current_page = "evaluate_page"
+        st.rerun()
+    
     # Dropdown menu
-    options = ["Option 1", "Option 2", "Option 3"]
-    selected_option = st.selectbox("Choose an option", options)
-
-    st.write(f"You selected: {selected_option}")
+    options = ["Select", "Option 1", "Option 2", "Option 3"]
+    selected_option = st.selectbox("Choose Examiner's Answer Sheet", options)
 
     # Show content from the specified CSV if "Option 2" is selected
     if selected_option == "Option 2":
-        try:
+        try:         
             # Load CSV file
-            df_question_paper = pd.read_csv("Database/Exam Evaluation_ CSVs.csv")
+            df_question_paper = pd.read_csv("Frontend/Database/Exam Evaluation_ CSVs   - Sample CSV 1_ Examiner's Guidelines .csv")
+            
+            # Store the uploaded DataFrame in session state
+            st.session_state.df = df_question_paper
 
             # Configure the grid options to enable text wrapping
             gb = GridOptionsBuilder.from_dataframe(df_question_paper)
@@ -40,7 +66,7 @@ def display_next_page():
     st.divider()
 
     # File uploader for CSV files
-    uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+    uploaded_file = st.file_uploader("Upload Examiner's Answer Sheet", type="csv")
 
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
@@ -73,12 +99,19 @@ def display_next_page():
 
     # Place the "Go to Page 3" button in the rightmost column
     with col3:
-        if st.button("Go to Page 3"):
-            st.session_state.current_page = "page3"
-            st.rerun()
+        if st.button("Evaluate"):
+            if "df" not in st.session_state:
+                st.error("At least one student answer sheet needs to be selected")
+            else:
+                st.session_state.current_page = "evaluate_page"
+                st.rerun()                        
 
     # Place the "Go Back" button in the leftmost column
     with col1:
         if st.button("Go Back"):
-            st.session_state.current_page = "pdf_viewer"
+            st.session_state.current_page = "upload_student_answer"
             st.rerun()
+
+
+if __name__ == "__main__":
+    examiner_pdf()

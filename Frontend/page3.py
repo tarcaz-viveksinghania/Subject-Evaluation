@@ -8,9 +8,35 @@ sys.path.append(project_root)
 
 from Backend.utils import main
 
-def display_page3():
-    st.title("Page 3")
-    st.write("This is the third page of the Streamlit app.")
+def evaluate_result():
+    st.subheader("Evaluated Result")
+
+    # Load CSS from file
+    def load_css(file_name):
+        with open(file_name) as f:
+            return f.read()
+
+    # Inject sidebar CSS into the Streamlit app
+    st.markdown(f'<style>{load_css("Frontend/CSS/sidebar_styles.css")}</style>', unsafe_allow_html=True)
+    st.markdown(f'<style>{load_css("Frontend/CSS/button.css")}</style>', unsafe_allow_html=True)
+
+
+    # Add Sidebar into the Streamlit app
+    st.sidebar.title("GradeSmart.AI")
+    st.sidebar.divider()
+    if st.sidebar.button("Home", type="primary"):
+        st.session_state.current_page = "home_page"
+        st.rerun()
+    
+    if st.sidebar.button("Student", type="primary"):
+        st.session_state.current_page = "upload_student_answer"
+        st.rerun()
+    
+    if st.sidebar.button("Examiner", type="primary"):
+        st.session_state.current_page = "upload_teacher_answer"
+        st.rerun()
+    st.sidebar.button("Evaluate", type="primary", use_container_width=True)
+
 
     # Check if the PDF and DataFrame are stored in session state
     if "pdf_document" in st.session_state and "df" in st.session_state:
@@ -22,12 +48,17 @@ def display_page3():
         result_df = main(df, pdf_document)
 
         # Display the resulting DataFrame
-        st.write("Processed DataFrame:")
+        st.write("Processed Result:")
         st.dataframe(result_df)
     else:
         st.write("PDF or DataFrame not found. Please go back to the previous pages to upload and prepare the data.")
 
     # Button to navigate back to the previous page
-    if st.button("Go Back to Next Page"):
-        st.session_state.current_page = "next_page"
+    if st.button("Go Home"):        
+        st.session_state.current_page = "home_page"
         st.rerun()
+
+
+if __name__ == "__main__":
+    evaluate_result()
+

@@ -1,0 +1,15 @@
+/* Style for the sidebar */
+[data-testid="stSidebar"] {
+    color: #fff;
+    width: 250px;
+    padding-left: 20px;
+    height: 100vh;
+    background-color: #4d4855;
+    background-image: linear-gradient(130deg, #4d4855 0%, #000000 74%); 
+    border-top-right-radius: 80px;
+}
+
+section[data-testid="stSidebar"] {
+    width: 150px !important; 
+}
+
