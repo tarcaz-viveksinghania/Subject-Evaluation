@@ -1,2 +1,7 @@
 [server]
 port = 7861
+
+[theme]
+base="light"
+
+client.toolbarMode="minimal"

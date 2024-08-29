@@ -11,7 +11,7 @@ def render_pdf_page(pdf_document, page_number):
 
 
 def student_pdf():
-    st.subheader("Upload Student's Answers")
+    st.subheader("Upload Student's Answers", anchor=False)
 
     # Load CSS from file
     def load_css(file_name):
@@ -21,6 +21,7 @@ def student_pdf():
     # Inject sidebar CSS into the Streamlit app
     st.markdown(f'<style>{load_css("Frontend/CSS/sidebar_styles.css")}</style>', unsafe_allow_html=True)
     st.markdown(f'<style>{load_css("Frontend/CSS/button.css")}</style>', unsafe_allow_html=True)
+    st.markdown(f'<style>{load_css("Frontend/CSS/styles.css")}</style>', unsafe_allow_html=True)
 
     # Add Sidebar into the Streamlit app
     st.sidebar.title("GradeSmart.AI")
@@ -30,15 +31,29 @@ def student_pdf():
         st.session_state.current_page = "home_page"
         st.rerun()
     
-    st.sidebar.button("Student", type="primary", use_container_width=True)
+    st.sidebar.button("Upload Student Answer Sheet", type="primary", use_container_width=True)
     
-    if st.sidebar.button("Examiner", type="primary"):
+    if st.sidebar.button("Upload Examiner Answer Sheet", type="primary"):
         st.session_state.current_page = "upload_teacher_answer"
         st.rerun()
     
     if st.sidebar.button("Evaluate", type="primary"):
         st.session_state.current_page = "evaluate_page"
         st.rerun()
+    
+    
+
+
+    # Load the Google Fonts stylesheet in Streamlit
+    st.markdown(
+        """
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+        """,
+        unsafe_allow_html=True
+    )
+
+
+
 
 
     # File uploader for a single PDF
@@ -64,26 +79,26 @@ def student_pdf():
         # Navigation buttons
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button("Previous Page") and st.session_state.page_number > 0:
+            if st.button("◀") and st.session_state.page_number > 0:
                 st.session_state.page_number -= 1
                 st.rerun()
         with col2:
             st.write(f"Page {st.session_state.page_number + 1} of {total_pages}")
         with col3:
-            if st.button("Next Page") and st.session_state.page_number < total_pages - 1:
+            if st.button("▶") and st.session_state.page_number < total_pages - 1:
                 st.session_state.page_number += 1
                 st.rerun()
 
     st.divider()
 
     # Button to navigate to the next Streamlit page
-    col4, col5, col6, col7, col8 = st.columns(5)
+    col4, col5, col6, col7, col8, col9, col10, col11, col12, col13 = st.columns(10)
     with col4:
-        if st.button("Go Home"):
+        if st.button("Home", use_container_width=True):
             st.session_state.current_page = "home_page"
             st.rerun()
-    with col8:
-        if st.button("Go to Next Page"):
+    with col13:
+        if st.button("Next", use_container_width=True):
             st.session_state.current_page = "upload_teacher_answer"
             st.rerun()
 
